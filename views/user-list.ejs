@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <title>All Queries</title>
+</head>
+<body>
+  <div class="container mt-5">
+    <!-- Page Heading -->
+    <h1 class="mb-4">All Users</h1>
+
+    <!-- Table for displaying queries -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (users.length > 0) { %>
+            <% users.forEach(user => { %>
+              <tr>
+                <td><%= user.name %></td>
+                <td><%= user.email %></td>
+                <td><%= user.password %></td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="text-center">No users found.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Back to Home Button -->
+    <div class="text-center mt-4">
+      <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,7 +1,8 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import userModel from '../model/userModel.js'; // Ensure correct model is imported
+import userModel from '../model/userModel.js';
+import axios from 'axios';
 
 const router = express.Router();
 
@@ -77,5 +78,46 @@ router.post('/login', async (req, res) => {
         });
     }
 });
+
+// Google Login Route
+router.post('/google-login', async (req, res) => {
+    const { credential } = req.body;
+
+    if (!credential) {
+        return res.status(400).json({ message: 'No credential provided' });
+    }
+
+    try {
+        const response = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
+        const { email, name } = response.data;
+
+        let user = await userModel.findOne({ email });
+        if (!user) {
+            user = new userModel({ name, email, password: null }); // Password can be null for Google sign-in
+            await user.save();
+        }
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(200).json({
+            message: 'Google login successful',
+            token,
+            user: { id: user._id, email: user.email, name } // Return user info
+        });
+    } catch (error) {
+        console.error('Google login error:', error.response ? error.response.data : error.message);
+        res.status(400).json({ message: 'Google login failed', error: error.response ? error.response.data : error.message });
+    }
+});
+
+router.get('/user-data', async(req, res) => {
+    try {
+      const users = await userModel.find();
+      res.render('user-list',{users});
+    } catch (error) {
+      console.error('error fetching queries:', error);
+      res.status(500).send('server error');
+    }
+  });
 
 export default router;
