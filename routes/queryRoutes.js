@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import nodemailer from 'nodemailer'; // Import nodemailer
 import QueryModel from '../model/QueryModel.js'; // Import the QueryModel
 
@@ -69,5 +69,17 @@ router.post('/submit-query', async (req, res) => {
     res.status(500).json({ message: 'Error submitting query' });
   }
 });
+
+router.get('/query-data', async(req, res) => {
+  try {
+    const queries = await QueryModel.find();
+    res.render('queries-list', {queries});
+  } catch (error) {
+    console.error('error fetching queries:', error);
+    res.status(500).send('server error');
+  }
+});
+
+
 
 export default router; // Export the router
